@@ -62,8 +62,6 @@ void fsh_request_cb(uv_http_t* http, const char* url, size_t url_size) {
     return;
   }
 
-  msg = uv_buf_init("OK", 2);
-
   fields[0] = uv_buf_init("Content-Length", 14);
   values[0] = uv_buf_init(tmp,
       snprintf(tmp, sizeof(tmp), "%d", (int) file->content.len));
@@ -71,7 +69,7 @@ void fsh_request_cb(uv_http_t* http, const char* url, size_t url_size) {
   values[1] = file->type;
 
   req->http.chunked = 0;
-  err = uv_http_req_respond(&req->http, 200, &msg, fields, values,
+  err = uv_http_req_respond(&req->http, code, &msg, fields, values,
                             ARRAY_SIZE(fields));
   if (err != 0)
     goto fail;

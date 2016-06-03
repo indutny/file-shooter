@@ -167,6 +167,7 @@ int main() {
   OpenSSL_add_all_digests();
   SSL_load_error_strings();
   ERR_load_crypto_strings();
+  sk_SSL_COMP_zero(SSL_COMP_get_compression_methods());
 
   /* Initialize SSL_CTX */
   CHECK_ALLOC(secure_context = SSL_CTX_new(SSLv23_method()));
@@ -185,6 +186,14 @@ int main() {
                                  SSL_SESS_CACHE_NO_AUTO_CLEAR);
   SSL_CTX_set_options(secure_context, SSL_OP_SINGLE_ECDH_USE);
   SSL_CTX_set_options(secure_context, SSL_OP_SINGLE_DH_USE);
+  SSL_CTX_set_options(secure_context, SSL_OP_CIPHER_SERVER_PREFERENCE);
+  SSL_CTX_set_cipher_list(secure_context,
+      "ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:"
+      "ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:"
+      "DHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-SHA256:"
+      "DHE-RSA-AES128-SHA256:ECDHE-RSA-AES256-SHA384:DHE-RSA-AES256-SHA384:"
+      "ECDHE-RSA-AES256-SHA256:DHE-RSA-AES256-SHA256:HIGH:!aNULL:!eNULL:"
+      "!EXPORT:!DES:!RC4:!MD5:!PSK:!SRP:!CAMELLIA");
 
   fsh_init_dhe(secure_context);
   fsh_init_files();

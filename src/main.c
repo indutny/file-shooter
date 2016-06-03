@@ -19,23 +19,6 @@ static fsh_file_t* files;
 static uv_tcp_t server;
 
 
-static void fsh_init_dhe(SSL_CTX* ctx) {
-  int nid;
-  EC_KEY* ecdh;
-
-  nid = OBJ_sn2nid("prime256v1");
-  if (nid == NID_undef)
-    abort();
-
-  ecdh = EC_KEY_new_by_curve_name(nid);
-  if (ecdh == NULL)
-    abort();
-
-  SSL_CTX_set_tmp_ecdh(ctx, ecdh);
-  EC_KEY_free(ecdh);
-}
-
-
 #define BUF(str) uv_buf_init(str, sizeof(str) - 1)
 
 
@@ -177,24 +160,8 @@ int main() {
                               SSL_FILETYPE_PEM);
 
   /* Some secure configuration */
-  SSL_CTX_set_options(secure_context, SSL_OP_NO_SSLv2);
-  SSL_CTX_set_options(secure_context, SSL_OP_NO_SSLv3);
-  SSL_CTX_set_session_cache_mode(secure_context,
-                                 SSL_SESS_CACHE_SERVER |
-                                 SSL_SESS_CACHE_NO_INTERNAL |
-                                 SSL_SESS_CACHE_NO_AUTO_CLEAR);
-  SSL_CTX_set_options(secure_context, SSL_OP_SINGLE_ECDH_USE);
-  SSL_CTX_set_options(secure_context, SSL_OP_SINGLE_DH_USE);
-  SSL_CTX_set_options(secure_context, SSL_OP_CIPHER_SERVER_PREFERENCE);
-  SSL_CTX_set_cipher_list(secure_context,
-      "ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:"
-      "ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:"
-      "DHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-SHA256:"
-      "DHE-RSA-AES128-SHA256:ECDHE-RSA-AES256-SHA384:DHE-RSA-AES256-SHA384:"
-      "ECDHE-RSA-AES256-SHA256:DHE-RSA-AES256-SHA256:HIGH:!aNULL:!eNULL:"
-      "!EXPORT:!DES:!RC4:!MD5:!PSK:!SRP:!CAMELLIA");
+  CHECK(uv_ssl_setup_recommended_secure_context(secure_context));
 
-  fsh_init_dhe(secure_context);
   fsh_init_files();
 
   loop = uv_default_loop();

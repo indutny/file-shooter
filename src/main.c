@@ -172,8 +172,7 @@ int main() {
   /* Initialize SSL_CTX */
   CHECK_ALLOC(secure_context = SSL_CTX_new(SSLv23_method()));
 
-  SSL_CTX_use_certificate_chain_file(secure_context, "keys/cert.pem",
-                                     SSL_FILETYPE_PEM);
+  SSL_CTX_use_certificate_chain_file(secure_context, "keys/cert.pem");
   SSL_CTX_use_PrivateKey_file(secure_context, "keys/key.pem",
                               SSL_FILETYPE_PEM);
 

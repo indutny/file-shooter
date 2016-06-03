@@ -1,0 +1,15 @@
+[submodule "deps/libuv"]
+	path = deps/libuv
+	url = gh:libuv/libuv
+[submodule "deps/uv_link_t"]
+	path = deps/uv_link_t
+	url = gh:indutny/uv_link_t
+[submodule "deps/uv_ssl_t"]
+	path = deps/uv_ssl_t
+	url = gh:indutny/uv_ssl_t
+[submodule "tools/gyp"]
+	path = tools/gyp
+	url = https://chromium.googlesource.com/external/gyp.git
+[submodule "deps/uv_http_t"]
+	path = deps/uv_http_t
+	url = gh:indutny/uv_http_t

@@ -26,9 +26,11 @@ void fsh_request_cb(uv_http_t* http, const char* url, size_t url_size) {
   fsh_request_t* req;
   fsh_file_t* file;
   uv_buf_t msg;
+  unsigned short code;
   uv_buf_t fields[2];
   uv_buf_t values[ARRAY_SIZE(fields)];
   char tmp[128];
+  int err;
 
   CHECK_ALLOC(req = malloc(sizeof(*req)));
   CHECK(uv_http_accept(http, &req->http));
@@ -38,16 +40,25 @@ void fsh_request_cb(uv_http_t* http, const char* url, size_t url_size) {
   /* Bad Method */
   if (req->http.method != UV_HTTP_GET) {
     msg = uv_buf_init("Bad request", 11);
-    uv_http_req_respond(&req->http, 400, &msg, NULL, NULL, 0);
-    uv_link_shutdown((uv_link_t*) &req->http, fsh_request_shutdown_cb, NULL);
-    return;
+    code = 400;
+  /* File not found */
+  } else if (file == NULL) {
+    msg = uv_buf_init("Not Found", 9);
+    code = 404;
+  } else {
+    msg = uv_buf_init("OK", 2);
+    code = 200;
   }
 
-  /* File not found */
-  if (file == NULL) {
-    msg = uv_buf_init("Not Found", 9);
-    uv_http_req_respond(&req->http, 404, &msg, NULL, NULL, 0);
-    uv_link_shutdown((uv_link_t*) &req->http, fsh_request_shutdown_cb, NULL);
+  if (code != 200) {
+    err = uv_http_req_respond(&req->http, code, &msg, NULL, NULL, 0);
+    if (err != 0)
+      goto fail;
+
+    err = uv_link_shutdown((uv_link_t*) &req->http, fsh_request_shutdown_cb,
+                           NULL);
+    if (err != 0)
+      goto fail;
     return;
   }
 
@@ -60,8 +71,18 @@ void fsh_request_cb(uv_http_t* http, const char* url, size_t url_size) {
   values[1] = file->type;
 
   req->http.chunked = 0;
-  uv_http_req_respond(&req->http, 200, &msg, fields, values,
-                      ARRAY_SIZE(fields));
-  uv_link_write((uv_link_t*) &req->http, &file->content, 1, NULL,
-                fsh_request_write_cb, NULL);
+  err = uv_http_req_respond(&req->http, 200, &msg, fields, values,
+                            ARRAY_SIZE(fields));
+  if (err != 0)
+    goto fail;
+
+  err = uv_link_write((uv_link_t*) &req->http, &file->content, 1, NULL,
+                      fsh_request_write_cb, NULL);
+  if (err != 0)
+    goto fail;
+
+  return;
+
+fail:
+  uv_link_close((uv_link_t*) &req->http, fsh_request_close_cb);
 }

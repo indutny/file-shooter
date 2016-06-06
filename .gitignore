@@ -1,1 +1,4 @@
 out/
+node_modules/
+build/
+gypkg_deps/

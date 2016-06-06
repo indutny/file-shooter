@@ -4,16 +4,21 @@
     "type": "executable",
 
     "include_dirs": [
-
       ".",
     ],
 
+    "variables": {
+      "gypkg_deps": [
+        "git://github.com/libuv/libuv.git#v1.9.1:uv.gyp:libuv",
+        "git://github.com/indutny/uv_link_t:uv_link_t.gyp:uv_link_t",
+        "git://github.com/indutny/uv_http_t:uv_http_t.gyp:uv_http_t",
+        "git://github.com/indutny/uv_ssl_t:uv_ssl_t.gyp:uv_ssl_t",
+        "git://github.com/indutny/bud:deps/openssl/openssl.gyp:openssl",
+      ],
+    },
+
     "dependencies": [
-      "deps/libuv/uv.gyp:libuv",
-      "deps/openssl/openssl.gyp:openssl",
-      "deps/uv_link_t/uv_link_t.gyp:uv_link_t",
-      "deps/uv_ssl_t/uv_ssl_t.gyp:uv_ssl_t",
-      "deps/uv_http_t/uv_http_t.gyp:uv_http_t",
+      "<!@(gypkg deps <(gypkg_deps))",
     ],
 
     "sources": [

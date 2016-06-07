@@ -9,11 +9,11 @@
 
     "variables": {
       "gypkg_deps": [
-        "git://github.com/libuv/libuv.git#v1.9.1:uv.gyp:libuv",
-        "git://github.com/indutny/uv_link_t:uv_link_t.gyp:uv_link_t",
-        "git://github.com/indutny/uv_http_t:uv_http_t.gyp:uv_http_t",
-        "git://github.com/indutny/uv_ssl_t:uv_ssl_t.gyp:uv_ssl_t",
-        "git://github.com/indutny/bud:deps/openssl/openssl.gyp:openssl",
+        "git://github.com/libuv/libuv.git@^1.9.0:uv.gyp:libuv",
+        "git://github.com/indutny/uv_link_t@^1.0.0:uv_link_t.gyp:uv_link_t",
+        "git://github.com/indutny/uv_http_t@^1.0.0:uv_http_t.gyp:uv_http_t",
+        "git://github.com/indutny/uv_ssl_t@^1.0.0:uv_ssl_t.gyp:uv_ssl_t",
+        "git://github.com/indutny/bud@^4.0.3:deps/openssl/openssl.gyp:openssl",
       ],
     },
 

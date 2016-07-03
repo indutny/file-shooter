@@ -2,14 +2,15 @@
 #include <stdlib.h>
 #include <string.h>
 
+/* NOTE: Include `uv.h` first for Windows */
+#include "uv.h"
+
 #include "openssl/ssl.h"
 #include "openssl/bio.h"
 #include "openssl/err.h"
 #include "openssl/evp.h"
 #include "openssl/pem.h"
 #include "openssl/x509.h"
-
-#include "uv.h"
 
 #include "src/connection.h"
 #include "src/common.h"
